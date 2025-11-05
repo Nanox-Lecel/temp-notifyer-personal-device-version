@@ -10,7 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import deque
 import datetime
 import smtplib
-from email.mime.text import MimeText
+from email.mime.text import MIMEText  # Fixed import
 from email.mime.multipart import MIMEMultipart
 import json
 import os
@@ -23,8 +23,8 @@ class TemperatureMonitor:
         self.root.resizable(True, True)
         
         # Temperature thresholds
-        self.critical_temp = 40  # °C
-        self.warning_temp = 35   # °C
+        self.critical_temp = 85  # °C
+        self.warning_temp = 75   # °C
         
         # Monitoring state
         self.is_monitoring = False
@@ -33,19 +33,20 @@ class TemperatureMonitor:
         
         # Alert tracking
         self.last_warning_time = 0
-        self.warning_cooldown = 30  # Seconds between repeated warnings
+        self.warning_cooldown = 300  # 5 minutes between repeated warnings
+        
         # Temperature history for graphing
         self.temp_history = deque(maxlen=50)
         self.time_history = deque(maxlen=50)
         
-        # Email settings (Configure this part)
+        # Email settings
         self.email_settings = {
             'enabled': False,
             'smtp_server': 'smtp.gmail.com',
             'smtp_port': 587,
-            'sender_email': '1234@gmail.com',
-            'sender_password': '1234',
-            'receiver_email': '12@gmail.com',
+            'sender_email': '',
+            'sender_password': '',
+            'receiver_email': '',
             'use_tls': True
         }
         
@@ -359,7 +360,7 @@ class TemperatureMonitor:
             Please check your device immediately!
             """
             
-            msg.attach(MimeText(body, 'plain'))
+            msg.attach(MIMEText(body, 'plain'))  # Fixed: MIMEText instead of MimeText
             
             # Connect to server and send email
             server = smtplib.SMTP(self.email_settings['smtp_server'], self.email_settings['smtp_port'])
